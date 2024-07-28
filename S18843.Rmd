@@ -1,0 +1,119 @@
+---
+title: "ST405_MiniProject_2"
+author: "S/18/843"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(CCA)
+library(CCP)
+library(skimr)
+library(candisc)
+```
+
+```{r}
+travel_reviews <- read.csv("../Data/tripadvisor_review.csv")
+view(travel_reviews)
+
+```
+```{r}
+travel_reviews<-travel_reviews[,-1]
+head(travel_reviews)
+```
+```{r}
+skim(travel_reviews)
+```
+```{r}
+travel_reviews <- apply(travel_reviews,2,scale)
+```
+
+```{r}
+cultural_artistic <- travel_reviews[,c("art.galleries","restaurants","museums","theaters","religious.institutions")]
+recreational_social <- travel_reviews[,c("dance.clubs","juice.bars","resorts","parks.picnic.spots","beaches")]
+```
+
+```{r}
+head(cultural_artistic)
+```
+```{r}
+head(recreational_social)
+```
+
+
+```{r}
+ggpairs(cultural_artistic)
+```
+```{r}
+ggpairs(recreational_social)
+```
+```{r}
+correlation_matrix <- cor(cultural_artistic, recreational_social)
+correlation_matrix
+```
+
+
+
+```{r}
+matcor(cultural_artistic,recreational_social)
+
+```
+
+```{r}
+cc_model <- cc(cultural_artistic,recreational_social)
+cc_model$cor
+```
+```{r}
+rho <- cc_model$cor
+n <- dim(cultural_artistic)[1]
+p <- dim(recreational_social)[2]
+q <- dim(cultural_artistic)[2]
+```
+
+```{r}
+p.asym(rho,n,p,q,tstat = "Wilks")
+p.asym(rho,n,p,q,tstat = "Hotelling")
+p.asym(rho,n,p,q,tstat = "Pillai")
+p.asym(rho,n,p,q,tstat = "Roy")
+Wilks(cancor(cultural_artistic,recreational_social))
+```
+```{r}
+cc_model$cor[1:4]
+```
+
+```{r}
+cc_model$cor[1:4]^2
+```
+
+```{r}
+cc_model$xcoef
+```
+
+```{r}
+cc_model$ycoef
+```
+```{r}
+loadings <- comput(cultural_artistic,recreational_social,cc_model)
+loadings
+```
+```{r}
+loadings$corr.X.xscores
+```
+
+```{r}
+loadings$corr.Y.yscores
+```
+
+```{r}
+loadings$corr.X.yscores
+```
+
+```{r}
+loadings$corr.Y.xscores
+```
+
